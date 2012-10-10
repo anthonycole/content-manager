@@ -2,6 +2,10 @@
 
 /*
 Plugin Name: Content Manager
+Author: Anthony Cole
+Version: 0.1alpha
+Author URI: http://anthonycole.me/
+Description: A new Custom Post Type Manager for WordPress
 */
 
 class WP_ContentManager {
