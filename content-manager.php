@@ -8,6 +8,31 @@ Author URI: http://anthonycole.me/
 Description: A new Custom Post Type Manager for WordPress
 */
 
+/* 
+@todo
+- Make post type delete on delete
+- Add in soft notices if post types exist or there is a clash of some sort
+- Maybe use wp_parse args on pt options, but definitely...
+- Make sure that pt args by default are casting correctly.
+- Give post types an active flag or status
+- Clean Up UI and add in all of the things we're missing
+- Add label things
+- Add ability to register to existing taxonomies (eg categories or tags)
+- Flesh out rewrite into its own meta box
+- Rewrite rules regenerator
+- Labels
+- Add some hooks and filters
+- Map description to post_content
+- Check register_post_type for and log WP_Error
+- "Options" page
+* List of existing cpts
+* Link to resources
+* Option to cut/paste code into theme
+
+- Taxonomies cpt
+- Same love
+*/
+
 class WP_ContentManager {
 
 	function init() {
