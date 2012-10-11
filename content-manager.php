@@ -125,6 +125,8 @@ class WP_ContentManager {
 				if( $post_type['post_status'] != 'true' )
 					continue; 
 
+				// this will eventually be served from the option, I just need to make casting types work properly on insert first.
+
 				$args = array(
 				'label' => ucfirst($post_type['name']),
 				'public' => true,
