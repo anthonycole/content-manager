@@ -121,6 +121,10 @@ class WP_ContentManager {
 		$post_types = get_option('cm_post_types');
 
 			foreach($post_types as $post_type ) {
+
+				if( $post_type['post_status'] != 'true' )
+					continue; 
+
 				$args = array(
 				'label' => ucfirst($post_type['name']),
 				'public' => true,
@@ -148,6 +152,29 @@ class WP_ContentManager_Fields {
 
 	function register_metaboxes() {
 		 add_meta_box( 'cm-pt-manager', 'PT Options', get_class() . '::fields', 'cm_post_type', 'advanced', 'high', 'fields' );
+		 add_meta_box( 'cm-pt-active', 'Status', get_class() . '::field_active', 'cm_post_type', 'side', 'low', 'fields' );
+	}
+
+	function field_active($post) {
+		global $pagenow;
+
+		$option  = get_post_meta( $post->ID, '_cm_ptmeta', true );
+
+		if( null == $option['pt_status']  || '' == $option['pt_status'] ) {
+			// this feels kind of hackey, but it works.
+			$pt_status =  in_array( $pagenow, array( 'post-new.php' ) );
+		} else {
+			return true;
+		}
+
+		?>
+		<fieldset>
+			<div class="pt_active">
+				<input type="checkbox" name="cm_meta[pt_status]"  value="true" <?php echo checked($pt_status, true ); ?> />
+				<label for="cm_meta[pt_status]">Active</label>
+			</div>
+		</fieldset>
+		<?php
 	}
 
 	function fields() {
