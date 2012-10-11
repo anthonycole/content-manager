@@ -11,6 +11,7 @@ Description: A new Custom Post Type Manager for WordPress
 /* 
 @todo
 - Make post type delete on delete
+- Hook up options on post type page to mapped options so that they actually show.
 - Add in soft notices if post types exist or there is a clash of some sort
 - Maybe use wp_parse args on pt options, but definitely...
 - Make sure that pt args by default are casting correctly.
