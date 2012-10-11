@@ -104,8 +104,7 @@ class WP_ContentManager {
 			$post_types[] = $newpt;
 			update_option('cm_post_types', $post_types);
 		} else {
-
-			if( !empty($post_types) && in_array($post_types, $_REQEST['post_name']) ) {
+			if( !empty($post_types) && in_array($post_types, $pt_name) ) {
 				$inactive = 1;
 				// throw a soft error saying this post type already exists and this plugin has registered it.
 			}
@@ -162,7 +161,6 @@ class WP_ContentManager_Fields {
 		$option  = get_post_meta( $post->ID, '_cm_ptmeta', true );
 
 		if( null == $option['pt_status']  || '' == $option['pt_status'] ) {
-			// this feels kind of hackey, but it works.
 			$pt_status =  in_array( $pagenow, array( 'post-new.php' ) );
 		} else {
 			return true;
@@ -304,6 +302,37 @@ class WP_ContentManager_Fields {
 		</fieldset>
 		<?php
 	}
+}
+
+class WP_ContentManager_Errors {
+
+	static $option = 'cm_errors';
+
+	public function add($message) {
+		$errors = get_option(self::$option);
+
+		if( false == $errors ) {
+			$errors = array();
+		}
+
+		$errors[] = $message;
+	}
+
+	public static function show() {
+		$errors = get_option(self::$option);
+
+		if ( $errors != false ) {
+			foreach( $errors as $error ) {
+				echo '<div class="error"><p>' . $errors . '</p></div>';
+			}
+		}
+		self::delete();
+	}
+
+	private static function delete() {
+		delete_option(self::$option);
+	}
+
 }
 
 WP_ContentManager::init();
