@@ -10,7 +10,7 @@ Description: A new Custom Post Type Manager for WordPress
 
 /* 
 @todo
-- Make post type delete on delete
+- Use 0 and 1 instead of true.
 - Hook up options on post type page to mapped options so that they actually show.
 - Add in soft notices if post types exist or there is a clash of some sort
 - Maybe use wp_parse args on pt options, but definitely...
@@ -152,7 +152,7 @@ class WP_ContentManager {
 
 		$post = get_post($post_id);
 		unset($post_types[$post->post_name]);
-		
+
 		update_option('cm_post_types', $post_types);
 	}
 
