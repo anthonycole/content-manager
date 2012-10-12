@@ -40,6 +40,8 @@ class WP_ContentManager {
 		add_action( 'init', get_class() . '::register_post_type' );
 		add_action( 'save_post', get_class() . '::save_post' );
 		add_action( 'init', get_class() . '::bootstrap' );
+		add_action( 'publish_to_trash', get_class() . '::action_publish_to_trash' );
+		add_action( 'trash_to_publish', get_class() . '::action_trash_to_publish' );
 	}
 
 	function register_post_type() {
@@ -126,30 +128,48 @@ class WP_ContentManager {
 		update_post_meta( $post_id, '_cm_ptmeta', $_POST['cm_ptmeta']);
 	}
 
+	function action_publish_to_trash($post) {
+		$post_types = get_option('cm_post_types');
+
+		if ('cm_post_type' == $post->post_type) {
+			$post_types[$post->post_name]['pt_status'] = false;
+			update_option('cm_post_types', $post_types);
+		}
+
+	}
+
+	function action_trash_to_publish($post) {
+		$post_types = get_option('cm_post_types');
+
+		if ('cm_post_type' == $post->post_type) {
+			$post_types[$post->post_name]['pt_status'] = 'true';
+			update_option('cm_post_types', $post_types);
+		}
+	}
+
 	function bootstrap() {
 		$post_types = get_option('cm_post_types');
 
-
 			foreach($post_types as $post_type => $args ) {
-				
+
 				if( $args['pt_status'] != 'true' )
 					continue; 
 
 				// this will eventually be served from the option, I just need to make casting types work properly on insert first.
 
 				$args = array(
-				'label' => ucfirst($post_type),
-				'public' => true,
-				'publicly_queryable' => false,
-				'show_ui' => true, 
-				'show_in_menu' => true, 
-				'query_var' => true,
-				'capability_type' => 'post',
-				'has_archive' => false, 
-				'hierarchical' => false,
-				'menu_position' => null,
-				'supports' => array( 'title', 'editor')
-			);
+					'label' => ucfirst($post_type),
+					'public' => true,
+					'publicly_queryable' => false,
+					'show_ui' => true, 
+					'show_in_menu' => true, 
+					'query_var' => true,
+					'capability_type' => 'post',
+					'has_archive' => false, 
+					'hierarchical' => false,
+					'menu_position' => null,
+					'supports' => array( 'title', 'editor')
+				);
 
 			register_post_type($post_type['name'], $args);
   		}
