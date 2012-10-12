@@ -98,21 +98,30 @@ class WP_ContentManager {
 		if( empty( $pt_name) ) 
 			return;
 
-		$newpt = array( 'name' => $pt_name, 'args' => $_POST['cm_ptmeta'] );
+		$post_types[$pt_name] = $_POST['cm_ptmeta'];
 
 		if( false == post_type_exists($pt_name) ) {
 			$post_types[] = $newpt;
 			update_option('cm_post_types', $post_types);
 		} else {
 			if( !empty($post_types) && in_array($post_types, $pt_name) ) {
-				$inactive = 1;
-				// throw a soft error saying this post type already exists and this plugin has registered it.
+				update_option('cm_post_types', $post_types);
 			}
-
-			// we will have to throw an error here of some sort - maybe a "Soft" notice to say that a post type like this already exists.
 		}
 
-		// get our option ready
+		// get our option ready and nicely denormalised.
+
+		$args = array(
+			'label',
+			'public',
+			'publicly_queryable',
+			'show_ui',
+			'show_in_menu',
+			'query_var',
+			'has_archive',
+			'hierarchial',
+		);
+
 
 		update_post_meta( $post_id, '_cm_ptmeta', $_POST['cm_ptmeta']);
 	}
@@ -120,15 +129,16 @@ class WP_ContentManager {
 	function bootstrap() {
 		$post_types = get_option('cm_post_types');
 
-			foreach($post_types as $post_type ) {
 
-				if( $post_type['post_status'] != 'true' )
+			foreach($post_types as $post_type => $args ) {
+				
+				if( $args['pt_status'] != 'true' )
 					continue; 
 
 				// this will eventually be served from the option, I just need to make casting types work properly on insert first.
 
 				$args = array(
-				'label' => ucfirst($post_type['name']),
+				'label' => ucfirst($post_type),
 				'public' => true,
 				'publicly_queryable' => false,
 				'show_ui' => true, 
@@ -162,58 +172,63 @@ class WP_ContentManager_Fields {
 
 		$option  = get_post_meta( $post->ID, '_cm_ptmeta', true );
 
-		if( null == $option['pt_status']  || '' == $option['pt_status'] ) {
+		$pt_status = $option['pt_status'];
+
+		if( null == $pt_status  || '' == $pt_status ) {
 			$pt_status =  in_array( $pagenow, array( 'post-new.php' ) );
 		} else {
-			return true;
+			$pt_status = true;
 		}
 
 		?>
 		<fieldset>
 			<div class="pt_active">
-				<input type="checkbox" name="cm_meta[pt_status]"  value="true" <?php echo checked($pt_status, true ); ?> />
-				<label for="cm_meta[pt_status]">Active</label>
+				<input type="checkbox" name="cm_ptmeta[pt_status]"  value="true" <?php echo checked($pt_status, true ); ?> />
+				<label for="cm_ptmeta[pt_status]">Active</label>
 			</div>
 		</fieldset>
 		<?php
 	}
 
-	function fields() {
+	function fields($post) {
+		$meta = get_post_meta( $post->ID, '_cm_ptmeta', true );
+
+		// var_dump($meta);
 		?>
 		<fieldset>
 
 			<div class="label">
 				<label for="label">Label Name</label>
-				<input type="text" size="24" name="cm_ptmeta[label]" value="" />
+				<input type="text" size="24" name="cm_ptmeta[label]" value="<?php echo $meta['label']; ?>" />
 			</div>
 
 			<div class="public">
-				<input type="checkbox" name="cm_ptmeta[public]" value="true" />
+				<input type="checkbox" name="cm_ptmeta[public]" value="true" <?php echo checked($meta['public'], true ); ?>/>
 				<label for="cm_ptmeta[public]">Public</label>
 			</div>
 
 			<div class="publicly-queryable">
-				<input type="checkbox" name="cm_ptmeta[publicly_queryable]" value="true" />
+				<input type="checkbox" name="cm_ptmeta[publicly_queryable]" <?php echo checked($meta['publicly_queryable'], true ); ?> value="true" />
 				<label for="cm_ptmeta[publicly_queryable]">Publicly Queryable</label>
 			</div>
 
 			<div class="show-ui">
-				<input type="checkbox" name="cm_ptmeta[show_ui]" value="true" />
+				<input type="checkbox" name="cm_ptmeta[show_ui]" <?php echo checked($meta['show_ui'], true ); ?>  value="true" />
 				<label for="cm_ptmeta[show_ui]">Show UI</label>
 			</div>
 
 			<div class="has-archive">
-				<input type="checkbox" name="cm_ptmeta[has_archive]" value="true">
+				<input type="checkbox" name="cm_ptmeta[has_archive]" <?php echo checked($meta['has_archive'], true ); ?>  value="true">
 				<label for="cm_ptmeta[has_archive]">Has Archive</label>
 			</div>
 
 			<div class="has-archive">
-				<input type="checkbox" name="cm_ptmeta[can_export]" value="true">
+				<input type="checkbox" name="cm_ptmeta[can_export]" <?php echo checked($meta['can_export'], true ); ?>  value="true">
 				<label for="cm_ptmeta[can_export]">Can Export</label>
 			</div>
 
 			<div class="show-in-menu">
-				<input type="checkbox" name="cm_ptmeta[show_in_menu]" value="true">
+				<input type="checkbox" name="cm_ptmeta[show_in_menu]" <?php echo checked($meta['show_in_menu'], true ); ?>  value="true">
 				<label for="cm_ptmeta[show_in_menu]">Show In Menu</label>
 			</div>
 
@@ -248,7 +263,7 @@ class WP_ContentManager_Fields {
 			</div>
 
 			<div class="heirarchial">
-				<input type="checkbox" name="cm_ptmeta[heirarchial]" value="true">
+				<input type="checkbox" name="cm_ptmeta[heirarchial]" <?php echo checked($meta['heirarchial'], true ); ?>  value="true">
 				<label for="cm_ptmeta[heirarchial]">Heirarchial</label>
 			</div>
 
@@ -257,47 +272,47 @@ class WP_ContentManager_Fields {
 				<br />
 				<br />
 				<div class="sep">
-					<input type="checkbox" name="cm_ptmeta[supports][title]" value="true">
+					<input type="checkbox" name="cm_ptmeta[supports][title]" <?php echo checked($meta['supports']['title'], true ); ?>  value="true">
 					<label for="cm_ptmeta[supports]">Title</label>
 				</div>
 				<div class="sep">
-					<input type="checkbox" name="cm_ptmeta[supports][editor]" value="true">
+					<input type="checkbox" name="cm_ptmeta[supports][editor]" <?php echo checked($meta['supports']['editor'], true ); ?>   value="true">
 					<label for="cm_ptmeta[supports]">Editor</label>
 				</div>
 				<div class="sep">
-					<input type="checkbox" name="cm_ptmeta[supports][author]" value="true">
+					<input type="checkbox" name="cm_ptmeta[supports][author]" <?php echo checked($meta['supports']['author'], true ); ?>   value="true">
 					<label for="cm_ptmeta[supports]">Author</label>
 				</div>
 				<div class="sep">
-					<input type="checkbox" name="cm_ptmeta[supports][thumbnail]" value="true">
+					<input type="checkbox" name="cm_ptmeta[supports][thumbnail]" <?php echo checked($meta['supports']['thumbnail'], true ); ?>   value="true">
 					<label for="cm_ptmeta[supports]">Thumbnail</label>
 				</div>
 				<div class="sep">
-					<input type="checkbox" name="cm_ptmeta[supports][thumbnail]" value="true">
+					<input type="checkbox" name="cm_ptmeta[supports][thumbnail]" <?php echo checked($meta['supports']['excerpt'], true ); ?>   value="true">
 					<label for="cm_ptmeta[supports]">Excerpt</label>
 				</div>
 				<div class="sep">
-					<input type="checkbox" name="cm_ptmeta[supports][trackbacks]" value="true">
+					<input type="checkbox" name="cm_ptmeta[supports][trackbacks]" <?php echo checked($meta['supports']['trackbacks'], true ); ?>   value="true">
 					<label for="cm_ptmeta[supports]">Trackbacks</label>
 				</div>
 				<div class="sep">
-					<input type="checkbox" name="cm_ptmeta[supports][custom_fields]" value="true">
+					<input type="checkbox" name="cm_ptmeta[supports][custom_fields]" <?php echo checked($meta['supports']['custom_fields'], true ); ?>   value="true">
 					<label for="cm_ptmeta[supports]">Custom Fields</label>
 				</div>
 				<div class="sep">
-					<input type="checkbox" name="cm_ptmeta[supports][comments]" value="true">
+					<input type="checkbox" name="cm_ptmeta[supports][comments]" <?php echo checked($meta['supports']['comments'], true ); ?>   value="true">
 					<label for="cm_ptmeta[supports]">Comments</label>
 				</div>
 				<div class="sep">
-					<input type="checkbox" name="cm_ptmeta[supports][revisions]" value="true">
+					<input type="checkbox" name="cm_ptmeta[supports][revisions]"  <?php echo checked($meta['supports']['revisions'], true ); ?>  value="true">
 					<label for="cm_ptmeta[supports]">Revisions</label>
 				</div>
 				<div class="sep">
-					<input type="checkbox" name="cm_ptmeta[supports][page-attributes]" value="true">
+					<input type="checkbox" name="cm_ptmeta[supports][page-attributes]" <?php echo checked($meta['supports']['page-attributes'], true ); ?>   value="true">
 					<label for="cm_ptmeta[supports]">Page Attributes</label>
 				</div>
 				<div class="sep">
-					<input type="checkbox" name="cm_ptmeta[supports][post-formats]" value="true">
+					<input type="checkbox" name="cm_ptmeta[supports][post-formats]" <?php echo checked($meta['supports']['post-formats'], true ); ?>   value="true">
 					<label for="cm_ptmeta[supports]">Post Formats</label>
 				</div>
 			</div>
