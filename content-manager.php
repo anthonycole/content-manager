@@ -15,7 +15,6 @@ Description: A new Custom Post Type Manager for WordPress
 - Add in soft notices if post types exist or there is a clash of some sort
 - Maybe use wp_parse args on pt options, but definitely...
 - Make sure that pt args by default are casting correctly.
-- Give post types an active flag or status
 - Clean Up UI and add in all of the things we're missing
 - Add label things
 - Add ability to register to existing taxonomies (eg categories or tags)
@@ -38,10 +37,11 @@ class WP_ContentManager {
 
 	function init() {
 		add_action( 'init', get_class() . '::register_post_type' );
-		add_action( 'save_post', get_class() . '::save_post' );
 		add_action( 'init', get_class() . '::bootstrap' );
+		add_action( 'save_post', get_class() . '::save_post' );
 		add_action( 'publish_to_trash', get_class() . '::action_publish_to_trash' );
 		add_action( 'trash_to_publish', get_class() . '::action_trash_to_publish' );
+		add_action( 'delete_post', get_class() . '::action_delete');
 	}
 
 	function register_post_type() {
@@ -145,6 +145,15 @@ class WP_ContentManager {
 			$post_types[$post->post_name]['pt_status'] = 'true';
 			update_option('cm_post_types', $post_types);
 		}
+	}
+
+	function action_delete( $post_id ) {
+		$post_types = get_option('cm_post_types');
+
+		$post = get_post($post_id);
+		unset($post_types[$post->post_name]);
+		
+		update_option('cm_post_types', $post_types);
 	}
 
 	function bootstrap() {
