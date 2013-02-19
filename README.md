@@ -19,5 +19,5 @@ Todo
 * Link to resources
 * Option to cut/paste code into theme
 - Taxonomies cpt
-- Same love
 - Integrate Advanced Custom Fields or at the very least support it better.
+- Unit Testing
