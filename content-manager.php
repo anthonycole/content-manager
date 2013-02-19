@@ -28,13 +28,25 @@ Description: A new Custom Post Type Manager for WordPress
 * List of existing cpts
 * Link to resources
 * Option to cut/paste code into theme
-
 - Taxonomies cpt
 - Same love
 */
 
+
+/**
+ * WP_ContentManager
+ *
+ * @package content-manager
+ * @author anthonycole
+ **/
 class WP_ContentManager {
 
+	/**
+	 * Initialises the plugin.
+	 *
+	 * @return void
+	 * @author anthonycole
+	 **/
 	function init() {
 		add_action( 'init', get_class() . '::register_post_type' );
 		add_action( 'init', get_class() . '::bootstrap' );
@@ -44,6 +56,12 @@ class WP_ContentManager {
 		add_action( 'delete_post', get_class() . '::action_delete');
 	}
 
+	/**
+	 * Initialises the post type that is used to manage post types.
+	 *
+	 * @return void
+	 * @author anthonycole
+	 **/
 	function register_post_type() {
 		$labels = array(
 		    'name' => _x('Post Types', 'post type general name', 'your_text_domain'),
@@ -79,6 +97,13 @@ class WP_ContentManager {
   		register_post_type('cm_post_type', $args);
 	}
 
+
+	/**
+	 * Saves post types properly.
+	 *
+	 * @return void
+	 * @author 
+	 **/
 	function save_post( $post_id ) {
 
 		if( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ||  $_REQUEST['post_type'] != 'cm_post_type' ) 
@@ -128,6 +153,13 @@ class WP_ContentManager {
 		update_post_meta( $post_id, '_cm_ptmeta', $_POST['cm_ptmeta']);
 	}
 
+
+	/**
+	 * Post type is unactive if post is in the trash..
+	 *
+	 * @return void
+	 * @author 
+	 **/
 	function action_publish_to_trash($post) {
 		$post_types = get_option('cm_post_types');
 
@@ -138,6 +170,12 @@ class WP_ContentManager {
 
 	}
 
+	/**
+	 * Raise post type from the grave.
+	 *
+	 * @return void
+	 * @author 
+	 **/
 	function action_trash_to_publish($post) {
 		$post_types = get_option('cm_post_types');
 
@@ -147,6 +185,12 @@ class WP_ContentManager {
 		}
 	}
 
+	/**
+	 * Delete post type forever.
+	 *
+	 * @return void
+	 * @author 
+	 **/
 	function action_delete( $post_id ) {
 		$post_types = get_option('cm_post_types');
 
@@ -156,6 +200,13 @@ class WP_ContentManager {
 		update_option('cm_post_types', $post_types);
 	}
 
+
+	/**
+	 * Used to instantiate post types. I think there's a way to speed this up, but for the time being it kind of works.
+	 *
+	 * @return void
+	 * @author 
+	 **/
 	function bootstrap() {
 		$post_types = get_option('cm_post_types');
 
@@ -164,26 +215,25 @@ class WP_ContentManager {
 				if( $args['pt_status'] != 'true' )
 					continue; 
 
-				// this will eventually be served from the option, I just need to make casting types work properly on insert first.
-
+				// this will eventually be served from the option, I just need to make casting types work properly on insert first.s
 				$args = array(
 					'label' => ucfirst($post_type),
-					'public' => true,
-					'publicly_queryable' => false,
-					'show_ui' => true, 
-					'show_in_menu' => true, 
-					'query_var' => true,
-					'capability_type' => 'post',
-					'has_archive' => false, 
-					'hierarchical' => false,
-					'menu_position' => null,
+					'public' => $args['public'],
+					'publicly_queryable' => $args['publicly_queryable'],
+					'show_ui' => $args['show_ui'], 
+					'show_in_menu' => $args['show_in_menu'], 
+					'query_var' => $args['query_var'],
+					'capability_type' => $args['capability_type'],
+					'has_archive' => $args['has_archive'], 
+					'hierarchical' => $args['heirarchial'],
+					'menu_position' => $args['menu_position'],
 					'supports' => array( 'title', 'editor')
 				);
 
-			register_post_type($post_type['name'], $args);
-  		}
+				register_post_type($post_type['name'], $args);
+  			}
 	}
-}
+} // END 
 
 class WP_ContentManager_Fields {
 
@@ -222,7 +272,6 @@ class WP_ContentManager_Fields {
 	function fields($post) {
 		$meta = get_post_meta( $post->ID, '_cm_ptmeta', true );
 
-		// var_dump($meta);
 		?>
 		<fieldset>
 
@@ -232,32 +281,33 @@ class WP_ContentManager_Fields {
 			</div>
 
 			<div class="public">
-				<input type="checkbox" name="cm_ptmeta[public]" value="true" <?php echo checked($meta['public'], true ); ?>/>
+				<input type="checkbox" name="cm_ptmeta[public]"<?php echo checked($meta['public'], true ); ?>  value="1" fdescription
+				/>
 				<label for="cm_ptmeta[public]">Public</label>
 			</div>
 
 			<div class="publicly-queryable">
-				<input type="checkbox" name="cm_ptmeta[publicly_queryable]" <?php echo checked($meta['publicly_queryable'], true ); ?> value="true" />
+				<input type="checkbox" name="cm_ptmeta[publicly_queryable]" <?php echo checked($meta['publicly_queryable'], true ); ?> value="1" />
 				<label for="cm_ptmeta[publicly_queryable]">Publicly Queryable</label>
 			</div>
 
 			<div class="show-ui">
-				<input type="checkbox" name="cm_ptmeta[show_ui]" <?php echo checked($meta['show_ui'], true ); ?>  value="true" />
+				<input type="checkbox" name="cm_ptmeta[show_ui]" <?php echo checked($meta['show_ui'], true ); ?>  value="1" />
 				<label for="cm_ptmeta[show_ui]">Show UI</label>
 			</div>
 
 			<div class="has-archive">
-				<input type="checkbox" name="cm_ptmeta[has_archive]" <?php echo checked($meta['has_archive'], true ); ?>  value="true">
+				<input type="checkbox" name="cm_ptmeta[has_archive]" <?php echo checked($meta['has_archive'], true ); ?>  value="1">
 				<label for="cm_ptmeta[has_archive]">Has Archive</label>
 			</div>
 
 			<div class="has-archive">
-				<input type="checkbox" name="cm_ptmeta[can_export]" <?php echo checked($meta['can_export'], true ); ?>  value="true">
+				<input type="checkbox" name="cm_ptmeta[can_export]" <?php echo checked($meta['can_export'], true ); ?>  value="1">
 				<label for="cm_ptmeta[can_export]">Can Export</label>
 			</div>
 
 			<div class="show-in-menu">
-				<input type="checkbox" name="cm_ptmeta[show_in_menu]" <?php echo checked($meta['show_in_menu'], true ); ?>  value="true">
+				<input type="checkbox" name="cm_ptmeta[show_in_menu]" <?php echo checked($meta['show_in_menu'], true ); ?>  value="1">
 				<label for="cm_ptmeta[show_in_menu]">Show In Menu</label>
 			</div>
 
@@ -292,7 +342,7 @@ class WP_ContentManager_Fields {
 			</div>
 
 			<div class="heirarchial">
-				<input type="checkbox" name="cm_ptmeta[heirarchial]" <?php echo checked($meta['heirarchial'], true ); ?>  value="true">
+				<input type="checkbox" name="cm_ptmeta[heirarchial]" <?php echo checked($meta['heirarchial'], true ); ?>  value="1">
 				<label for="cm_ptmeta[heirarchial]">Heirarchial</label>
 			</div>
 
@@ -301,47 +351,47 @@ class WP_ContentManager_Fields {
 				<br />
 				<br />
 				<div class="sep">
-					<input type="checkbox" name="cm_ptmeta[supports][title]" <?php echo checked($meta['supports']['title'], true ); ?>  value="true">
+					<input type="checkbox" name="cm_ptmeta[supports][title]" <?php echo checked($meta['supports']['title'], true ); ?>  value="1">
 					<label for="cm_ptmeta[supports]">Title</label>
 				</div>
 				<div class="sep">
-					<input type="checkbox" name="cm_ptmeta[supports][editor]" <?php echo checked($meta['supports']['editor'], true ); ?>   value="true">
+					<input type="checkbox" name="cm_ptmeta[supports][editor]" <?php echo checked($meta['supports']['editor'], true ); ?>   value="1">
 					<label for="cm_ptmeta[supports]">Editor</label>
 				</div>
 				<div class="sep">
-					<input type="checkbox" name="cm_ptmeta[supports][author]" <?php echo checked($meta['supports']['author'], true ); ?>   value="true">
+					<input type="checkbox" name="cm_ptmeta[supports][author]" <?php echo checked($meta['supports']['author'], true ); ?>   value="1">
 					<label for="cm_ptmeta[supports]">Author</label>
 				</div>
 				<div class="sep">
-					<input type="checkbox" name="cm_ptmeta[supports][thumbnail]" <?php echo checked($meta['supports']['thumbnail'], true ); ?>   value="true">
+					<input type="checkbox" name="cm_ptmeta[supports][thumbnail]" <?php echo checked($meta['supports']['thumbnail'], true ); ?>   value="1">
 					<label for="cm_ptmeta[supports]">Thumbnail</label>
 				</div>
 				<div class="sep">
-					<input type="checkbox" name="cm_ptmeta[supports][thumbnail]" <?php echo checked($meta['supports']['excerpt'], true ); ?>   value="true">
+					<input type="checkbox" name="cm_ptmeta[supports][thumbnail]" <?php echo checked($meta['supports']['excerpt'], true ); ?>   value="1">
 					<label for="cm_ptmeta[supports]">Excerpt</label>
 				</div>
 				<div class="sep">
-					<input type="checkbox" name="cm_ptmeta[supports][trackbacks]" <?php echo checked($meta['supports']['trackbacks'], true ); ?>   value="true">
+					<input type="checkbox" name="cm_ptmeta[supports][trackbacks]" <?php echo checked($meta['supports']['trackbacks'], true ); ?>   value="1">
 					<label for="cm_ptmeta[supports]">Trackbacks</label>
 				</div>
 				<div class="sep">
-					<input type="checkbox" name="cm_ptmeta[supports][custom_fields]" <?php echo checked($meta['supports']['custom_fields'], true ); ?>   value="true">
+					<input type="checkbox" name="cm_ptmeta[supports][custom_fields]" <?php echo checked($meta['supports']['custom_fields'], true ); ?>   value="1">
 					<label for="cm_ptmeta[supports]">Custom Fields</label>
 				</div>
 				<div class="sep">
-					<input type="checkbox" name="cm_ptmeta[supports][comments]" <?php echo checked($meta['supports']['comments'], true ); ?>   value="true">
+					<input type="checkbox" name="cm_ptmeta[supports][comments]" <?php echo checked($meta['supports']['comments'], true ); ?>   value="1">
 					<label for="cm_ptmeta[supports]">Comments</label>
 				</div>
 				<div class="sep">
-					<input type="checkbox" name="cm_ptmeta[supports][revisions]"  <?php echo checked($meta['supports']['revisions'], true ); ?>  value="true">
+					<input type="checkbox" name="cm_ptmeta[supports][revisions]"  <?php echo checked($meta['supports']['revisions'], true ); ?>  value="1">
 					<label for="cm_ptmeta[supports]">Revisions</label>
 				</div>
 				<div class="sep">
-					<input type="checkbox" name="cm_ptmeta[supports][page-attributes]" <?php echo checked($meta['supports']['page-attributes'], true ); ?>   value="true">
+					<input type="checkbox" name="cm_ptmeta[supports][page-attributes]" <?php echo checked($meta['supports']['page-attributes'], true ); ?>   value="1">
 					<label for="cm_ptmeta[supports]">Page Attributes</label>
 				</div>
 				<div class="sep">
-					<input type="checkbox" name="cm_ptmeta[supports][post-formats]" <?php echo checked($meta['supports']['post-formats'], true ); ?>   value="true">
+					<input type="checkbox" name="cm_ptmeta[supports][post-formats]" <?php echo checked($meta['supports']['post-formats'], true ); ?>   value="1">
 					<label for="cm_ptmeta[supports]">Post Formats</label>
 				</div>
 			</div>
@@ -350,10 +400,21 @@ class WP_ContentManager_Fields {
 	}
 }
 
+/**
+ * I'm using this class to manage errors because WordPress doesn't have a built in exception handler/WP_Query is a pile.
+ *
+ * @package default
+ * @author anthonycole
+ **/
 class WP_ContentManager_Errors {
 
 	static $option = 'cm_errors';
-
+	/**
+	 * Add errors.
+	 *
+	 * @return void
+	 * @author anthonycole
+	 **/
 	public function add($message) {
 		$errors = get_option(self::$option);
 
@@ -364,6 +425,12 @@ class WP_ContentManager_Errors {
 		$errors[] = $message;
 	}
 
+	/**
+	 * Show errors.
+	 *
+	 * @return void
+	 * @author anthonycole
+	 **/
 	public static function show() {
 		$errors = get_option(self::$option);
 
@@ -375,12 +442,17 @@ class WP_ContentManager_Errors {
 		self::delete();
 	}
 
+	/**
+	 * Delete an errors.
+	 *
+	 * @return void
+	 * @author anthonycole
+	 **/
 	private static function delete() {
 		delete_option(self::$option);
 	}
 
-}
+} // END WP_ContentManager 
 
 WP_ContentManager::init();
-
 WP_ContentManager_Fields::init();
