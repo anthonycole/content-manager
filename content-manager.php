@@ -47,7 +47,7 @@ class WP_ContentManager {
 	 * @return void
 	 * @author anthonycole
 	 **/
-	function init() {
+	public static function init() {
 		add_action( 'init', get_class() . '::register_post_type' );
 		add_action( 'init', get_class() . '::bootstrap' );
 		add_action( 'save_post', get_class() . '::save_post' );
@@ -62,7 +62,7 @@ class WP_ContentManager {
 	 * @return void
 	 * @author anthonycole
 	 **/
-	function register_post_type() {
+	public static function register_post_type() {
 		$labels = array(
 		    'name' => _x('Post Types', 'post type general name', 'your_text_domain'),
 		    'singular_name' => _x('Post Type', 'post type singular name', 'your_text_domain'),
@@ -104,7 +104,7 @@ class WP_ContentManager {
 	 * @return void
 	 * @author 
 	 **/
-	function save_post( $post_id ) {
+	public static function save_post( $post_id ) {
 
 		if( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ||  $_REQUEST['post_type'] != 'cm_post_type' ) 
 			return $post_id;
@@ -160,7 +160,7 @@ class WP_ContentManager {
 	 * @return void
 	 * @author 
 	 **/
-	function action_publish_to_trash($post) {
+	public static function action_publish_to_trash($post) {
 		$post_types = get_option('cm_post_types');
 
 		if ('cm_post_type' == $post->post_type) {
@@ -176,7 +176,7 @@ class WP_ContentManager {
 	 * @return void
 	 * @author 
 	 **/
-	function action_trash_to_publish($post) {
+	public static function action_trash_to_publish($post) {
 		$post_types = get_option('cm_post_types');
 
 		if ('cm_post_type' == $post->post_type) {
@@ -191,7 +191,7 @@ class WP_ContentManager {
 	 * @return void
 	 * @author 
 	 **/
-	function action_delete( $post_id ) {
+	public static function action_delete( $post_id ) {
 		$post_types = get_option('cm_post_types');
 
 		$post = get_post($post_id);
@@ -207,31 +207,34 @@ class WP_ContentManager {
 	 * @return void
 	 * @author 
 	 **/
-	function bootstrap() {
+	public static function bootstrap() {
+		echo "HI!";
 		$post_types = get_option('cm_post_types');
+		die(var_dump($post_types));
 
-			foreach($post_types as $post_type => $args ) {
+		foreach($post_types as $post_type => $args ) {
+			var_dump($post_type);
 
-				if( $args['pt_status'] != 'true' )
-					continue; 
+			if( $args['pt_status'] != 'true' )
+				continue; 
 
-				// this will eventually be served from the option, I just need to make casting types work properly on insert first.s
-				$args = array(
-					'label' => ucfirst($post_type),
-					'public' => $args['public'],
-					'publicly_queryable' => $args['publicly_queryable'],
-					'show_ui' => $args['show_ui'], 
-					'show_in_menu' => $args['show_in_menu'], 
-					'query_var' => $args['query_var'],
-					'capability_type' => $args['capability_type'],
-					'has_archive' => $args['has_archive'], 
-					'hierarchical' => $args['heirarchial'],
-					'menu_position' => $args['menu_position'],
-					'supports' => array( 'title', 'editor')
-				);
+			// this will eventually be served from the option, I just need to make casting types work properly on insert first.s
+			$args = array(
+				'label' => ucfirst($post_type),
+				'public' => $args['public'],
+				'publicly_queryable' => $args['publicly_queryable'],
+				'show_ui' => $args['show_ui'], 
+				'show_in_menu' => $args['show_in_menu'], 
+				'query_var' => $args['query_var'],
+				'capability_type' => $args['capability_type'],
+				'has_archive' => $args['has_archive'], 
+				'hierarchical' => $args['heirarchial'],
+				'menu_position' => $args['menu_position'],
+				'supports' => array( 'title', 'editor')
+			);
 
-				register_post_type($post_type['name'], $args);
-  			}
+			register_post_type($post_type['name'], $args);
+			}
 	}
 } // END 
 
