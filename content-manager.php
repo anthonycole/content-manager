@@ -10,8 +10,7 @@ Description: A new Custom Post Type Manager for WordPress
 
 /* 
 @todo
-- Use 0 and 1 instead of true.
-- Hook up options on post type page to mapped options so that they actually show.
+- Add textdomain stuff.
 - Add in soft notices if post types exist or there is a clash of some sort
 - Maybe use wp_parse args on pt options, but definitely...
 - Make sure that pt args by default are casting correctly.
@@ -23,7 +22,7 @@ Description: A new Custom Post Type Manager for WordPress
 - Labels
 - Add some hooks and filters
 - Map description to post_content
-- Check register_post_type for and log WP_Error
+- Check register_post_type for and log WP_Error. Figure out how to make this nicer.
 - "Options" page
 * List of existing cpts
 * Link to resources
@@ -136,21 +135,6 @@ class WP_ContentManager {
 			}
 		}
 
-		// get our option ready and nicely denormalised. 
-		// On further inspection, I have nfi what I was thinking here.
-
-		$args = array(
-			'label',
-			'public',
-			'publicly_queryable',
-			'show_ui',
-			'show_in_menu',
-			'query_var',
-			'has_archive',
-			'hierarchial', 
-		);
-
-
 		update_post_meta( $post_id, '_cm_ptmeta', $_POST['cm_ptmeta']);
 	}
 
@@ -208,34 +192,35 @@ class WP_ContentManager {
 	 * @author 
 	 **/
 	public static function bootstrap() {
-		echo "HI!";
 		$post_types = get_option('cm_post_types');
-		die(var_dump($post_types));
 
-		foreach($post_types as $post_type => $args ) {
-			var_dump($post_type);
+		foreach($post_types as $post_type => $ptargs ) {
 
-			if( $args['pt_status'] != 'true' )
-				continue; 
+			if( $ptargs['pt_status'] != 'true' )
+				continue;
 
-			// this will eventually be served from the option, I just need to make casting types work properly on insert first.s
 			$args = array(
 				'label' => ucfirst($post_type),
-				'public' => $args['public'],
-				'publicly_queryable' => $args['publicly_queryable'],
-				'show_ui' => $args['show_ui'], 
-				'show_in_menu' => $args['show_in_menu'], 
-				'query_var' => $args['query_var'],
-				'capability_type' => $args['capability_type'],
-				'has_archive' => $args['has_archive'], 
-				'hierarchical' => $args['heirarchial'],
-				'menu_position' => $args['menu_position'],
-				'supports' => array( 'title', 'editor')
-			);
+			    'public' => $ptargs['public'],
+			    'publicly_queryable' => $ptargs['publicly_queryable'],
+			    'show_ui' =>  $ptargs['show_ui'], 
+			    'show_in_menu' => true, // keep this true for now, we'll add an option to subclass it later. 
+			    'query_var' => true,
+			    'rewrite' => array( 'slug' => $ptargs['slug'] ), // we should check to see if this changes.
+			    'capability_type' => $ptargs['capability_type'], 
+			    'has_archive' => $ptargs['has_archive'], 
+			    'hierarchical' => $ptargs['heirarchial'],
+			    'menu_position' => $ptargs['menu_position'],
+			    'supports' => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments' ) // this needs to be more intuitive at some point.
+			); 
 
-			register_post_type($post_type['name'], $args);
-			}
+			$pt = register_post_type($post_type, $args);
+
+		}
+
 	}
+
+
 } // END 
 
 /**
