@@ -47,6 +47,9 @@ class WP_ContentManager {
 	 * @author anthonycole
 	 **/
 	public static function init() {
+
+		load_plugin_textdomain( 'ac-content-manager', false, dirname( plugin_basename( __FILE__ ) ) ); 
+
 		add_action( 'init', get_class() . '::register_post_type' );
 		add_action( 'init', get_class() . '::bootstrap' );
 		add_action( 'save_post', get_class() . '::save_post' );
@@ -63,19 +66,19 @@ class WP_ContentManager {
 	 **/
 	public static function register_post_type() {
 		$labels = array(
-		    'name' => _x('Post Types', 'post type general name', 'your_text_domain'),
-		    'singular_name' => _x('Post Type', 'post type singular name', 'your_text_domain'),
-		    'add_new' => _x('Add New', 'book', 'your_text_domain'),
-		    'add_new_item' => __('Add New Post Type', 'your_text_domain'),
-		    'edit_item' => __('Edit Post Type', 'your_text_domain'),
-		    'new_item' => __('New Post Type', 'your_text_domain'),
-		    'all_items' => __('All Post Types', 'your_text_domain'),
-		    'view_item' => __('View Post Type', 'your_text_domain'),
-		    'search_items' => __('Search Post Types', 'your_text_domain'),
-		    'not_found' =>  __('No post types found', 'your_text_domain'),
-		    'not_found_in_trash' => __('No post types found in Trash', 'your_text_domain'), 
+		    'name' => _x('Post Types', 'post type general name', 'ac-content-manager'),
+		    'singular_name' => _x('Post Type', 'post type singular name', 'ac-content-manager'),
+		    'add_new' => _x('Add New', 'book', 'ac-content-manager'),
+		    'add_new_item' => __('Add New Post Type', 'ac-content-manager'),
+		    'edit_item' => __('Edit Post Type', 'ac-content-manager'),
+		    'new_item' => __('New Post Type', 'ac-content-manager'),
+		    'all_items' => __('All Post Types', 'ac-content-manager'),
+		    'view_item' => __('View Post Type', 'ac-content-manager'),
+		    'search_items' => __('Search Post Types', 'ac-content-manager'),
+		    'not_found' =>  __('No post types found', 'ac-content-manager'),
+		    'not_found_in_trash' => __('No post types found in Trash', 'ac-content-manager'), 
 		    'parent_item_colon' => '',
-		    'menu_name' => __('Post Types', 'your_text_domain')
+		    'menu_name' => __('Post Types', 'ac-content-manager')
 	  	);
 	  	
 	  	$args = array(
@@ -421,7 +424,7 @@ class WP_ContentManager_Fields {
 /**
  * I'm using this class to manage errors because WordPress doesn't have a built in exception handler/WP_Query is a pile.
  *
- * @package default
+ * @package content-manager
  * @author anthonycole
  **/
 class WP_ContentManager_Errors {
@@ -430,7 +433,7 @@ class WP_ContentManager_Errors {
 	/**
 	 * Add errors.
 	 *
-	 * @return void
+	 * @return array
 	 * @author anthonycole
 	 **/
 	public static function add($message) {
