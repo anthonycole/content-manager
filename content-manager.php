@@ -153,7 +153,6 @@ class WP_ContentManager {
 		update_post_meta( $post_id, '_cm_ptmeta', $_POST['cm_ptmeta']);
 	}
 
-
 	/**
 	 * Post type is unactive if post is in the trash..
 	 *
@@ -235,17 +234,40 @@ class WP_ContentManager {
 	}
 } // END 
 
+/**
+ * Manage fields on our post type, to abstract everything out a little bit.
+ *
+ * @return void
+ * @author 
+ **/
 class WP_ContentManager_Fields {
-
+	/**
+	 * Initialise Things.
+	 *
+	 * @return void
+	 * @author 
+	 **/
 	function init() {
 		add_action('add_meta_boxes', get_class() . '::register_metaboxes');
 	}
 
+	/**
+	 * Register metaboxes.
+	 *
+	 * @return void
+	 * @author 
+	 **/
 	function register_metaboxes() {
 		 add_meta_box( 'cm-pt-manager', 'PT Options', get_class() . '::fields', 'cm_post_type', 'advanced', 'high', 'fields' );
 		 add_meta_box( 'cm-pt-active', 'Status', get_class() . '::field_active', 'cm_post_type', 'side', 'low', 'fields' );
 	}
 
+	/**
+	 * Post type status.
+	 *
+	 * @return void
+	 * @author 
+	 **/
 	function field_active($post) {
 		global $pagenow;
 
@@ -269,6 +291,13 @@ class WP_ContentManager_Fields {
 		<?php
 	}
 
+
+	/**
+	 * Various PT Fields.
+	 *
+	 * @return void
+	 * @author 
+	 **/
 	function fields($post) {
 		$meta = get_post_meta( $post->ID, '_cm_ptmeta', true );
 
