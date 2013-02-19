@@ -427,7 +427,7 @@ class WP_ContentManager_Errors {
 
 	static $option = 'cm_errors';
 	/**
-	 * Add errors.
+	 * Add error.
 	 *
 	 * @return array
 	 * @author anthonycole
@@ -460,7 +460,7 @@ class WP_ContentManager_Errors {
 	}
 
 	/**
-	 * Delete an errors.
+	 * Delete an error.
 	 *
 	 * @return void
 	 * @author anthonycole
@@ -469,7 +469,7 @@ class WP_ContentManager_Errors {
 		delete_option(self::$option);
 	}
 
-} // END WP_ContentManager 
+} // END WP_ContentManager_Errors 
 
 WP_ContentManager::init();
 WP_ContentManager_Fields::init();
