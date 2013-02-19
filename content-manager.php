@@ -10,17 +10,12 @@ Description: A new Custom Post Type Manager for WordPress
 
 /* 
 @todo
-- Add textdomain stuff.
 - Add in soft notices if post types exist or there is a clash of some sort
-- Maybe use wp_parse args on pt options, but definitely...
-- Make sure that pt args by default are casting correctly.
 - Clean Up UI and add in all of the things we're missing
-- Add label things
+- Add better label support
 - Add ability to register to existing taxonomies (eg categories or tags)
-- Flesh out rewrite into its own meta box
-- Rewrite rules regenerator
-- Labels
-- Add some hooks and filters
+- Regenerate rewrite rules.
+- Add some hooks and filters to make this extendable.
 - Map description to post_content
 - Check register_post_type for and log WP_Error. Figure out how to make this nicer.
 - "Options" page
@@ -29,6 +24,7 @@ Description: A new Custom Post Type Manager for WordPress
 * Option to cut/paste code into theme
 - Taxonomies cpt
 - Same love
+- Integrate Advanced Custom Fields or at the very least support it better.
 */
 
 
