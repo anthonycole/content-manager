@@ -247,7 +247,7 @@ class WP_ContentManager_Fields {
 	 * @return void
 	 * @author 
 	 **/
-	function init() {
+	public static function init() {
 		add_action('add_meta_boxes', get_class() . '::register_metaboxes');
 	}
 
@@ -257,7 +257,7 @@ class WP_ContentManager_Fields {
 	 * @return void
 	 * @author 
 	 **/
-	function register_metaboxes() {
+	public static function register_metaboxes() {
 		 add_meta_box( 'cm-pt-manager', 'PT Options', get_class() . '::fields', 'cm_post_type', 'advanced', 'high', 'fields' );
 		 add_meta_box( 'cm-pt-active', 'Status', get_class() . '::field_active', 'cm_post_type', 'side', 'low', 'fields' );
 	}
@@ -268,7 +268,7 @@ class WP_ContentManager_Fields {
 	 * @return void
 	 * @author 
 	 **/
-	function field_active($post) {
+	public static function field_active($post) {
 		global $pagenow;
 
 		$option  = get_post_meta( $post->ID, '_cm_ptmeta', true );
@@ -298,7 +298,7 @@ class WP_ContentManager_Fields {
 	 * @return void
 	 * @author 
 	 **/
-	function fields($post) {
+	public static function fields($post) {
 		$meta = get_post_meta( $post->ID, '_cm_ptmeta', true );
 
 		?>
