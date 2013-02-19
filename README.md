@@ -1,4 +1,4 @@
-Content Manager v0.1alpha
+Content Manager v1.0beta
 ===============
 
 Content Manager is a Simple Content Manager for WordPress. More here soon..
