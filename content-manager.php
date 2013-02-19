@@ -136,7 +136,8 @@ class WP_ContentManager {
 			}
 		}
 
-		// get our option ready and nicely denormalised.
+		// get our option ready and nicely denormalised. 
+		// On further inspection, I have nfi what I was thinking here.
 
 		$args = array(
 			'label',
@@ -146,7 +147,7 @@ class WP_ContentManager {
 			'show_in_menu',
 			'query_var',
 			'has_archive',
-			'hierarchial',
+			'hierarchial', 
 		);
 
 
