@@ -415,7 +415,7 @@ class WP_ContentManager_Errors {
 	 * @return void
 	 * @author anthonycole
 	 **/
-	public function add($message) {
+	public static function add($message) {
 		$errors = get_option(self::$option);
 
 		if( false == $errors ) {
